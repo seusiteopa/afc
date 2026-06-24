@@ -163,7 +163,7 @@
   const SUPABASE_URL = 'https://cmkeabkmaivfrgyfisxx.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_fk41n_QrtzHJ_RoJss_Dww_N6IU-0LP';
 
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const grid = document.getElementById('productGrid');
   const stateMsg = document.getElementById('stateMsg');
   const filtersEl = document.getElementById('filters');
@@ -226,7 +226,7 @@
   });
 
   async function loadCatalog(){
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('products')
       .select('slug, name, description, price_cents, type, image_url')
       .eq('active', true)
