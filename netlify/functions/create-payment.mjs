@@ -10,6 +10,38 @@
 import { MercadoPagoConfig, Payment } from 'mercadopago';
 import { createClient } from '@supabase/supabase-js';
 
+// Nome do "bucket" (pasta) do Supabase Storage onde os arquivos digitais
+// ficam guardados de forma privada. Igual pra qualquer produto digital.
+const DIGITAL_BUCKET = 'digital-products';
+const LINK_EXPIRES_SECONDS = 60 * 60 * 24 * 7; // o link de download dura 7 dias
+
+// Dispara o e-mail de confirmação (e entrega, se houver arquivo) pelo Brevo.
+async function sendConfirmationEmail({ toEmail, productName, downloadUrl }) {
+  if (!toEmail) return;
+
+  const htmlContent = downloadUrl
+    ? `<p>Olá!</p>
+       <p>Seu pagamento de <strong>${productName}</strong> foi confirmado. Aqui está o link para baixar seu material:</p>
+       <p><a href="${downloadUrl}">${downloadUrl}</a></p>
+       <p>O link expira em 7 dias.</p>`
+    : `<p>Olá!</p>
+       <p>Seu pagamento de <strong>${productName}</strong> foi confirmado. Você vai receber o material em breve.</p>`;
+
+  await fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'api-key': process.env.BREVO_API_KEY,
+    },
+    body: JSON.stringify({
+      sender: { name: process.env.SENDER_NAME, email: process.env.SENDER_EMAIL },
+      to: [{ email: toEmail }],
+      subject: `Pedido confirmado — ${productName}`,
+      htmlContent,
+    }),
+  });
+}
+
 export const handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: JSON.stringify({ error: 'Método não permitido' }) };
@@ -68,8 +100,32 @@ export const handler = async (event) => {
       amount_cents: product.price_cents,
     });
 
-    // (a Parte 4 vai entrar bem aqui: disparar o e-mail pelo Brevo
-    // quando orderStatus === 'approved')
+    // 4) Se aprovado, dispara o e-mail de confirmação/entrega pelo Brevo
+    if (orderStatus === 'approved') {
+      let downloadUrl = null;
+
+      if (product.file_path) {
+        const { data: signed } = await supabase.storage
+          .from(DIGITAL_BUCKET)
+          .createSignedUrl(product.file_path, LINK_EXPIRES_SECONDS);
+        downloadUrl = signed?.signedUrl || null;
+      }
+
+      try {
+        await sendConfirmationEmail({
+          toEmail: formData?.payer?.email,
+          productName: product.name,
+          downloadUrl,
+        });
+        await supabase
+          .from('orders')
+          .update({ delivered: true })
+          .eq('mp_payment_id', String(result.id));
+      } catch (emailErr) {
+        // Não falha o pagamento por causa do e-mail — o cliente já pagou.
+        console.error('Falha ao enviar e-mail de confirmação:', emailErr);
+      }
+    }
 
     return {
       statusCode: 200,
