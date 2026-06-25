@@ -129,7 +129,16 @@ export const handler = async (event) => {
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ status: mpStatus, payment_id: result.id }),
+      body: JSON.stringify({
+        status: mpStatus,
+        payment_id: result.id,
+        pix: result.point_of_interaction?.transaction_data
+          ? {
+              qr_code: result.point_of_interaction.transaction_data.qr_code,
+              qr_code_base64: result.point_of_interaction.transaction_data.qr_code_base64,
+            }
+          : null,
+      }),
     };
   } catch (err) {
     console.error(err);
