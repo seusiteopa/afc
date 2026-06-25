@@ -587,9 +587,32 @@
   const bricksBuilder = mp.bricks();
   const resultEl = document.getElementById('paymentResult');
 
-  function showResult(text, kind){
-    resultEl.textContent = text;
+  function showResult(content, kind){
+    resultEl.innerHTML = content;
     resultEl.className = 'payment-result ' + (kind ? ('is-' + kind) : '');
+  }
+
+  function showPixResult(pix){
+    const html = `
+      <p>Pagamento Pix gerado! Escaneie o QR Code ou copie o código abaixo no app do seu banco:</p>
+      ${pix.qr_code_base64 ? `<img src="data:image/png;base64,${pix.qr_code_base64}" alt="QR Code Pix" style="width:180px;height:180px;display:block;margin:12px 0;border:1px solid var(--line);background:#fff;">` : ''}
+      ${pix.qr_code ? `
+        <textarea readonly rows="3" style="width:100%;font-size:11px;background:var(--bg-panel-2);color:var(--text-dim);border:1px solid var(--line);padding:8px;margin-bottom:8px;font-family:var(--font-mono);" onclick="this.select()">${pix.qr_code}</textarea>
+        <button type="button" id="copyPixBtn" class="cta-btn" style="font-size:12px;padding:8px 14px;">Copiar código Pix</button>
+      ` : ''}
+      <p style="margin-top:12px;">Depois de pagar, a confirmação chega automaticamente por e-mail.</p>
+    `;
+    showResult(html, 'pending');
+
+    const btn = document.getElementById('copyPixBtn');
+    if (btn){
+      btn.addEventListener('click', () => {
+        navigator.clipboard.writeText(pix.qr_code).then(() => {
+          btn.textContent = 'Copiado!';
+          setTimeout(() => { btn.textContent = 'Copiar código Pix'; }, 2000);
+        });
+      });
+    }
   }
 
   bricksBuilder.create('payment', 'paymentBrick_container', {
@@ -621,8 +644,10 @@
             .then((data) => {
               if (data.status === 'approved') {
                 showResult('Pagamento aprovado! Você vai receber o e-book por e-mail em alguns instantes.', 'ok');
+              } else if (data.status === 'pending' && data.pix) {
+                showPixResult(data.pix);
               } else if (data.status === 'pending') {
-                showResult('Pagamento em processamento (normal em Pix/boleto). A confirmação chega por e-mail.', 'pending');
+                showResult('Pagamento em processamento (normal em boleto). A confirmação chega por e-mail.', 'pending');
               } else if (data.error) {
                 showResult('Não foi possível processar: ' + data.error, 'error');
               } else {
