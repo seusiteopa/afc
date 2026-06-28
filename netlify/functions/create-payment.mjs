@@ -6,41 +6,15 @@
 // a página manda — nunca confia no valor que vem do navegador.
 //
 // Nunca precisa editar este arquivo quando você criar um produto novo.
+// (Aceita opcionalmente "address" e "customer_name" — usado só quando
+// o produto é físico; pra digital, simplesmente vêm vazios.)
 
 import { MercadoPagoConfig, Payment } from 'mercadopago';
 import { createClient } from '@supabase/supabase-js';
+import { sendCustomerConfirmation, sendOwnerNotification } from './_shared/email.mjs';
 
-// Nome do "bucket" (pasta) do Supabase Storage onde os arquivos digitais
-// ficam guardados de forma privada. Igual pra qualquer produto digital.
 const DIGITAL_BUCKET = 'digital-products';
 const LINK_EXPIRES_SECONDS = 60 * 60 * 24 * 7; // o link de download dura 7 dias
-
-// Dispara o e-mail de confirmação (e entrega, se houver arquivo) pelo Brevo.
-async function sendConfirmationEmail({ toEmail, productName, downloadUrl }) {
-  if (!toEmail) return;
-
-  const htmlContent = downloadUrl
-    ? `<p>Olá!</p>
-       <p>Seu pagamento de <strong>${productName}</strong> foi confirmado. Aqui está o link para baixar seu material:</p>
-       <p><a href="${downloadUrl}">${downloadUrl}</a></p>
-       <p>O link expira em 7 dias.</p>`
-    : `<p>Olá!</p>
-       <p>Seu pagamento de <strong>${productName}</strong> foi confirmado. Você vai receber o material em breve.</p>`;
-
-  await fetch('https://api.brevo.com/v3/smtp/email', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'api-key': process.env.BREVO_API_KEY,
-    },
-    body: JSON.stringify({
-      sender: { name: process.env.SENDER_NAME, email: process.env.SENDER_EMAIL },
-      to: [{ email: toEmail }],
-      subject: `Pedido confirmado — ${productName}`,
-      htmlContent,
-    }),
-  });
-}
 
 export const handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -48,7 +22,7 @@ export const handler = async (event) => {
   }
 
   try {
-    const { product_slug, formData } = JSON.parse(event.body || '{}');
+    const { product_slug, formData, address, customer_name } = JSON.parse(event.body || '{}');
 
     if (!product_slug || !formData) {
       return { statusCode: 400, body: JSON.stringify({ error: 'Dados incompletos' }) };
@@ -91,16 +65,27 @@ export const handler = async (event) => {
     const orderStatus =
       mpStatus === 'approved' ? 'approved' : mpStatus === 'rejected' ? 'rejected' : 'pending';
 
-    // 3) Grava o pedido no Supabase
+    // 3) Grava o pedido no Supabase — inclui endereço só se vier preenchido (produto físico)
     await supabase.from('orders').insert({
       product_id: product.id,
       customer_email: formData?.payer?.email || null,
+      customer_name: customer_name || null,
       status: orderStatus,
       mp_payment_id: String(result.id),
       amount_cents: product.price_cents,
+      shipping_cep: address?.cep || null,
+      shipping_street: address?.street || null,
+      shipping_number: address?.number || null,
+      shipping_complement: address?.complement || null,
+      shipping_neighborhood: address?.neighborhood || null,
+      shipping_city: address?.city || null,
+      shipping_state: address?.state || null,
+      shipping_phone: address?.phone || null,
     });
 
-    // 4) Se aprovado, dispara o e-mail de confirmação/entrega pelo Brevo
+    // 4) Se aprovado JÁ na hora (comum em cartão), dispara os e-mails agora.
+    // Pix/boleto normalmente ficam "pending" aqui e são confirmados depois
+    // pelo mp-webhook.mjs, quando o Mercado Pago notificar a mudança de status.
     if (orderStatus === 'approved') {
       let downloadUrl = null;
 
@@ -112,11 +97,20 @@ export const handler = async (event) => {
       }
 
       try {
-        await sendConfirmationEmail({
+        await sendCustomerConfirmation({
           toEmail: formData?.payer?.email,
           productName: product.name,
           downloadUrl,
         });
+
+        await sendOwnerNotification({
+          productName: product.name,
+          amountCents: product.price_cents,
+          customerEmail: formData?.payer?.email,
+          customerName: customer_name,
+          address,
+        });
+
         await supabase
           .from('orders')
           .update({ delivered: true })
