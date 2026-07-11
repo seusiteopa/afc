@@ -1,141 +1,143 @@
-// netlify/functions/create-payment.mjs
+// netlify/functions/whatsapp-claude-webhook.mjs
 //
-// Esta function é a "ponte" segura entre a página e o Mercado Pago.
-// Ela é genérica: funciona pra QUALQUER produto, porque sempre busca
-// o preço e o tipo certo no Supabase a partir do "product_slug" que
-// a página manda — nunca confia no valor que vem do navegador.
+// Webhook que conecta o WhatsApp Business API (Meta Cloud API) ao Claude.
+// Fluxo: cliente manda mensagem no WhatsApp -> Meta chama esta função ->
+// a função pergunta pro Claude -> a resposta é enviada de volta pelo WhatsApp.
 //
-// Nunca precisa editar este arquivo quando você criar um produto novo.
-// (Aceita opcionalmente "address" e "customer_name" — usado só quando
-// o produto é físico; pra digital, simplesmente vêm vazios.)
+// VARIÁVEIS DE AMBIENTE (Netlify > Site settings > Environment variables)
+//   ANTHROPIC_API_KEY        -> chave da API do Claude (console.anthropic.com)
+//   WHATSAPP_TOKEN           -> token de acesso do WhatsApp Cloud API (Meta for Developers)
+//   WHATSAPP_PHONE_NUMBER_ID -> ID do número configurado no WhatsApp Business
+//   WHATSAPP_VERIFY_TOKEN    -> senha inventada por você, usada na verificação do webhook
 
-import { MercadoPagoConfig, Payment } from 'mercadopago';
-import { createClient } from '@supabase/supabase-js';
-import { sendCustomerConfirmation, sendOwnerNotification } from './_shared/email.mjs';
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+const WHATSAPP_TOKEN = process.env.WHATSAPP_TOKEN;
+const WHATSAPP_PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
+const WHATSAPP_VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN;
 
-const DIGITAL_BUCKET = 'digital-products';
-const LINK_EXPIRES_SECONDS = 60 * 60 * 24 * 7; // o link de download dura 7 dias
+const SYSTEM_PROMPT = `
+Você é o assistente de atendimento da ABUYSTORE (abuy.store), uma loja online.
+Responda sempre em português, de forma curta e direta (no máximo 3-4 frases),
+com tom simpático e prestativo, como um atendente humano de verdade.
 
-export const handler = async (event) => {
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: JSON.stringify({ error: 'Método não permitido' }) };
+PRODUTOS QUE VOCÊ PODE EXPLICAR:
+
+1. "O Código Oculto da Autofagia" — ebook digital sobre autofagia e saúde.
+   [PREENCHER: preço, formato de entrega (PDF/docx), o que o ebook cobre em detalhe]
+
+2. "Estratégia A.F.C." — ebook digital sobre marketing e funil de conversão.
+   [PREENCHER: preço, formato de entrega, o que o ebook cobre em detalhe]
+
+3. Misturador/chuveiro com LED passivo — produto físico, não precisa de energia elétrica
+   extra pra acender (a própria pressão da água aciona o LED).
+   [PREENCHER: preço, prazo de entrega, compatibilidade com tipos de aquecedor de água,
+   garantia]
+
+REGRAS:
+- Tire dúvidas sobre os produtos acima com base nas informações fornecidas.
+- Se não souber uma informação específica (preço exato, prazo, estoque), diga que vai
+  confirmar e não invente números.
+- Se o cliente quiser comprar, oriente a finalizar a compra pelo site abuy.store.
+- Se o cliente pedir para falar com um humano/atendente de verdade, informe educadamente
+  que no momento o atendimento é automático, mas que a dúvida dele foi registrada.
+- Não fale sobre assuntos fora da loja e seus produtos.
+`.trim();
+
+// Histórico em memória por número (some a cada cold start).
+// Pra produção real, trocar por um banco (Supabase, FaunaDB, Netlify Blobs, etc.)
+const conversas = new Map();
+
+export default async (req) => {
+  const url = new URL(req.url);
+
+  // 1) Verificação do webhook (Meta chama isso uma vez, via GET, ao configurar)
+  if (req.method === "GET") {
+    const mode = url.searchParams.get("hub.mode");
+    const token = url.searchParams.get("hub.verify_token");
+    const challenge = url.searchParams.get("hub.challenge");
+
+    if (mode === "subscribe" && token === WHATSAPP_VERIFY_TOKEN) {
+      return new Response(challenge, { status: 200 });
+    }
+    return new Response("Token de verificação inválido", { status: 403 });
   }
 
-  try {
-    const { product_slug, formData, address, customer_name } = JSON.parse(event.body || '{}');
+  // 2) Mensagem recebida (POST)
+  if (req.method === "POST") {
+    try {
+      const body = await req.json();
+      const msg = body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
 
-    if (!product_slug || !formData) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Dados incompletos' }) };
-    }
-
-    // 1) Conecta no Supabase e busca o produto pelo slug
-    const supabase = createClient(
-      process.env.SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_KEY
-    );
-
-    const { data: product, error: productError } = await supabase
-      .from('products')
-      .select('*')
-      .eq('slug', product_slug)
-      .eq('active', true)
-      .single();
-
-    if (productError || !product) {
-      return { statusCode: 404, body: JSON.stringify({ error: 'Produto não encontrado' }) };
-    }
-
-    // O preço de verdade é o do banco — ignoramos qualquer valor
-    // que tenha vindo do navegador, por segurança.
-    const realAmount = product.price_cents / 100;
-
-    // 2) Cobra de verdade no Mercado Pago
-    const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
-    const payment = new Payment(client);
-
-    const result = await payment.create({
-      body: {
-        ...formData,
-        transaction_amount: realAmount,
-        description: product.name,
-      },
-    });
-
-    const mpStatus = result.status; // 'approved' | 'pending' | 'rejected' | etc.
-    const orderStatus =
-      mpStatus === 'approved' ? 'approved' : mpStatus === 'rejected' ? 'rejected' : 'pending';
-
-    // 3) Grava o pedido no Supabase — inclui endereço só se vier preenchido (produto físico)
-    await supabase.from('orders').insert({
-      product_id: product.id,
-      customer_email: formData?.payer?.email || null,
-      customer_name: customer_name || null,
-      status: orderStatus,
-      mp_payment_id: String(result.id),
-      amount_cents: product.price_cents,
-      shipping_cep: address?.cep || null,
-      shipping_street: address?.street || null,
-      shipping_number: address?.number || null,
-      shipping_complement: address?.complement || null,
-      shipping_neighborhood: address?.neighborhood || null,
-      shipping_city: address?.city || null,
-      shipping_state: address?.state || null,
-      shipping_phone: address?.phone || null,
-    });
-
-    // 4) Se aprovado JÁ na hora (comum em cartão), dispara os e-mails agora.
-    // Pix/boleto normalmente ficam "pending" aqui e são confirmados depois
-    // pelo mp-webhook.mjs, quando o Mercado Pago notificar a mudança de status.
-    if (orderStatus === 'approved') {
-      let downloadUrl = null;
-
-      if (product.file_path) {
-        const { data: signed } = await supabase.storage
-          .from(DIGITAL_BUCKET)
-          .createSignedUrl(product.file_path, LINK_EXPIRES_SECONDS);
-        downloadUrl = signed?.signedUrl || null;
+      // Ignora eventos que não são mensagem de texto (status de entrega, etc.)
+      if (!msg || msg.type !== "text") {
+        return new Response("ok", { status: 200 });
       }
 
-      try {
-        await sendCustomerConfirmation({
-          toEmail: formData?.payer?.email,
-          productName: product.name,
-          downloadUrl,
-        });
+      const from = msg.from; // número do cliente
+      const texto = msg.text.body;
 
-        await sendOwnerNotification({
-          productName: product.name,
-          amountCents: product.price_cents,
-          customerEmail: formData?.payer?.email,
-          customerName: customer_name,
-          address,
-        });
+      const respostaClaude = await perguntarClaude(from, texto);
+      await enviarWhatsApp(from, respostaClaude);
 
-        await supabase
-          .from('orders')
-          .update({ delivered: true })
-          .eq('mp_payment_id', String(result.id));
-      } catch (emailErr) {
-        // Não falha o pagamento por causa do e-mail — o cliente já pagou.
-        console.error('Falha ao enviar e-mail de confirmação:', emailErr);
-      }
+      return new Response("ok", { status: 200 });
+    } catch (err) {
+      console.error("Erro no webhook:", err);
+      // Sempre devolve 200 pra Meta não ficar reenviando o mesmo evento
+      return new Response("erro tratado", { status: 200 });
     }
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({
-        status: mpStatus,
-        payment_id: result.id,
-        pix: result.point_of_interaction?.transaction_data
-          ? {
-              qr_code: result.point_of_interaction.transaction_data.qr_code,
-              qr_code_base64: result.point_of_interaction.transaction_data.qr_code_base64,
-            }
-          : null,
-      }),
-    };
-  } catch (err) {
-    console.error(err);
-    return { statusCode: 500, body: JSON.stringify({ error: 'Erro ao processar pagamento' }) };
   }
+
+  return new Response("Método não permitido", { status: 405 });
 };
+
+async function perguntarClaude(numero, textoUsuario) {
+  const historico = conversas.get(numero) || [];
+  historico.push({ role: "user", content: textoUsuario });
+
+  // mantém só as últimas 10 mensagens pra não estourar tokens
+  const historicoLimitado = historico.slice(-10);
+
+  const resp = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": ANTHROPIC_API_KEY,
+      "anthropic-version": "2023-06-01",
+    },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: 500,
+      system: SYSTEM_PROMPT,
+      messages: historicoLimitado,
+    }),
+  });
+
+  const data = await resp.json();
+  const respostaTexto =
+    data?.content?.[0]?.type === "text"
+      ? data.content[0].text
+      : "Desculpa, não consegui entender. Pode repetir?";
+
+  historico.push({ role: "assistant", content: respostaTexto });
+  conversas.set(numero, historico);
+
+  return respostaTexto;
+}
+
+async function enviarWhatsApp(numeroDestino, texto) {
+  const url = `https://graph.facebook.com/v20.0/${WHATSAPP_PHONE_NUMBER_ID}/messages`;
+
+  await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${WHATSAPP_TOKEN}`,
+    },
+    body: JSON.stringify({
+      messaging_product: "whatsapp",
+      to: numeroDestino,
+      type: "text",
+      text: { body: texto },
+    }),
+  });
+}
