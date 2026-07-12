@@ -1,27 +1,38 @@
 // netlify/functions/whatsapp-claude-webhook.mjs
 //
-// Webhook que conecta o WhatsApp Business API (Meta Cloud API) ao Claude.
+// Webhook que conecta o WhatsApp Business API (Meta Cloud API) ao Claude,
+// com histórico de conversa persistido no Supabase (sobrevive a cold starts).
+//
 // Fluxo: cliente manda mensagem no WhatsApp -> Meta chama esta função ->
-// a função pergunta pro Claude -> a resposta é enviada de volta pelo WhatsApp.
+// a função busca o histórico no Supabase -> pergunta pro Claude ->
+// salva a resposta no Supabase -> envia de volta pelo WhatsApp.
 //
 // VARIÁVEIS DE AMBIENTE (Netlify > Site settings > Environment variables)
 //   ANTHROPIC_API_KEY        -> chave da API do Claude (console.anthropic.com)
 //   WHATSAPP_TOKEN           -> token de acesso do WhatsApp Cloud API (Meta for Developers)
 //   WHATSAPP_PHONE_NUMBER_ID -> ID do número configurado no WhatsApp Business
 //   WHATSAPP_VERIFY_TOKEN    -> senha inventada por você, usada na verificação do webhook
+//   SUPABASE_URL              -> URL do projeto (Supabase > Project Settings > API)
+//   SUPABASE_SERVICE_KEY      -> service_role key (mesma tela, NÃO é a anon key)
+//
+// DEPENDÊNCIA (adicionar no package.json da pasta functions, ou rodar):
+//   npm install @supabase/supabase-js --break-system-packages
+//
+// SETUP DO BANCO: rodar o arquivo schema-conversas.sql no SQL Editor do Supabase
+// antes de usar esta function.
+
+import { createClient } from "@supabase/supabase-js";
+import { systemPromptCompleto } from "./prompts/fabricio-prompt.js";
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const WHATSAPP_TOKEN = process.env.WHATSAPP_TOKEN;
 const WHATSAPP_PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
 const WHATSAPP_VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN;
 
-const SYSTEM_PROMPT =
-  "Você é um assistente de atendimento via WhatsApp. Responda em português, " +
-  "de forma curta e direta (no máximo 3-4 frases), como se fosse um atendente humano simpático.";
-
-// Histórico em memória por número (some a cada cold start).
-// Pra produção real, trocar por um banco (Supabase, FaunaDB, Netlify Blobs, etc.)
-const conversas = new Map();
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY
+);
 
 export default async (req) => {
   const url = new URL(req.url);
@@ -66,8 +77,36 @@ export default async (req) => {
   return new Response("Método não permitido", { status: 405 });
 };
 
+async function buscarHistorico(numero) {
+  const { data, error } = await supabase
+    .from("conversas")
+    .select("historico")
+    .eq("telefone", numero)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Erro ao buscar histórico:", error);
+    return [];
+  }
+
+  return data?.historico || [];
+}
+
+async function salvarHistorico(numero, historico) {
+  const { error } = await supabase
+    .from("conversas")
+    .upsert(
+      { telefone: numero, historico, status: "em_conversa" },
+      { onConflict: "telefone" }
+    );
+
+  if (error) {
+    console.error("Erro ao salvar histórico:", error);
+  }
+}
+
 async function perguntarClaude(numero, textoUsuario) {
-  const historico = conversas.get(numero) || [];
+  const historico = await buscarHistorico(numero);
   historico.push({ role: "user", content: textoUsuario });
 
   // mantém só as últimas 10 mensagens pra não estourar tokens
@@ -83,7 +122,7 @@ async function perguntarClaude(numero, textoUsuario) {
     body: JSON.stringify({
       model: "claude-sonnet-4-6",
       max_tokens: 500,
-      system: SYSTEM_PROMPT,
+      system: systemPromptCompleto,
       messages: historicoLimitado,
     }),
   });
@@ -95,7 +134,9 @@ async function perguntarClaude(numero, textoUsuario) {
       : "Desculpa, não consegui entender. Pode repetir?";
 
   historico.push({ role: "assistant", content: respostaTexto });
-  conversas.set(numero, historico);
+
+  // Salva o histórico completo (não só o limitado) pra não perder contexto antigo
+  await salvarHistorico(numero, historico);
 
   return respostaTexto;
 }
