@@ -441,6 +441,18 @@
         <p>Acesso ao e-book completo, com os 8 capítulos sobre autofagia, jejum, sono e renovação celular — entrega automática por e-mail assim que o pagamento é confirmado.</p>
         <div class="price">R$ 47<small> · pagamento único</small></div>
         <div class="cta-note" style="margin-bottom:18px;color:rgba(255,255,255,0.6)">Pix, cartão ou boleto via Mercado Pago</div>
+        <div style="max-width:440px;margin:0 auto 16px;text-align:left;">
+          <label for="customerPhone" style="display:block;font-size:13px;margin-bottom:6px;color:rgba(255,255,255,0.75);">
+            WhatsApp (com DDD)
+          </label>
+          <input
+            type="tel"
+            id="customerPhone"
+            placeholder="(11) 99999-9999"
+            required
+            style="width:100%;padding:12px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:#fff;font-size:14px;"
+          >
+        </div>
         <div id="paymentBrick_container"></div>
         <div id="paymentResult" class="payment-result" role="status" aria-live="polite"></div>
       </div>
@@ -515,11 +527,23 @@
       },
       onSubmit: ({ selectedPaymentMethod, formData }) => {
         return new Promise((resolve) => {
+          const customerPhone = document.getElementById('customerPhone')?.value || '';
+
+          if (!customerPhone.trim()) {
+            showResult('Por favor, preencha seu WhatsApp antes de continuar.', 'error');
+            resolve();
+            return;
+          }
+
           showResult('Processando pagamento...', 'pending');
           fetch('/.netlify/functions/create-payment', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ product_slug: PRODUCT_SLUG, formData }),
+            body: JSON.stringify({
+              product_slug: PRODUCT_SLUG,
+              formData,
+              customer_phone: customerPhone,
+            }),
           })
             .then((response) => response.json())
             .then((data) => {
