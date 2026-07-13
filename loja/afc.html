@@ -561,6 +561,18 @@
         <p>Acesso ao e-book completo, com o sistema de 3 camadas pra transformar visitante em cliente — entrega automática por e-mail assim que o pagamento é confirmado.</p>
         <div class="price">R$ 47<small> · pagamento único</small></div>
         <div class="cta-note" style="margin-bottom:18px">Pix, cartão ou boleto via Mercado Pago</div>
+        <div style="max-width:440px;margin:0 auto 16px;text-align:left;">
+          <label for="customerPhone" style="display:block;font-size:13px;margin-bottom:6px;color:var(--text-dim);">
+            WhatsApp (com DDD)
+          </label>
+          <input
+            type="tel"
+            id="customerPhone"
+            placeholder="(11) 99999-9999"
+            required
+            style="width:100%;padding:12px 14px;border-radius:4px;border:1px solid var(--line);background:var(--bg-panel-2);color:var(--text-primary);font-family:var(--font-mono);font-size:14px;"
+          >
+        </div>
         <div id="paymentBrick_container"></div>
         <div id="paymentResult" class="payment-result" role="status" aria-live="polite"></div>
       </div>
@@ -589,10 +601,6 @@
 
   // ──────────────────────────────────────────────────────────
   // PAYMENT BRICK — formulário de pagamento embutido
-  // Por enquanto, o "Pagar" aqui só confirma que os dados do
-  // formulário chegaram certinho. Na próxima parte, vamos
-  // conectar isso de verdade com uma Netlify Function que
-  // consulta o preço no Supabase e cobra via Mercado Pago.
   // ──────────────────────────────────────────────────────────
   const mp = new MercadoPago(MP_PUBLIC_KEY, { locale: 'pt-BR' });
   const bricksBuilder = mp.bricks();
@@ -628,7 +636,7 @@
 
   bricksBuilder.create('payment', 'paymentBrick_container', {
     initialization: {
-      amount: 47.00, // valor só pra exibição do formulário — quem decide o valor cobrado de verdade vai ser o backend, na próxima parte
+      amount: 47.00, // valor só pra exibição do formulário — quem decide o valor cobrado de verdade é o backend
     },
     customization: {
       visual: { style: { theme: 'dark' } },
@@ -641,15 +649,27 @@
     },
     callbacks: {
       onReady: () => {
-        showResult('Formulário pronto. (Pagamento de verdade ainda não está conectado — isso é a próxima parte.)');
+        // formulário pronto
       },
       onSubmit: ({ selectedPaymentMethod, formData }) => {
         return new Promise((resolve) => {
+          const customerPhone = document.getElementById('customerPhone')?.value || '';
+
+          if (!customerPhone.trim()) {
+            showResult('Por favor, preencha seu WhatsApp antes de continuar.', 'error');
+            resolve();
+            return;
+          }
+
           showResult('Processando pagamento...', 'pending');
           fetch('/.netlify/functions/create-payment', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ product_slug: PRODUCT_SLUG, formData }),
+            body: JSON.stringify({
+              product_slug: PRODUCT_SLUG,
+              formData,
+              customer_phone: customerPhone,
+            }),
           })
             .then((response) => response.json())
             .then((data) => {
