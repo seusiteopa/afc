@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABUY — Loja</title>
+
+<link rel="icon" type="image/svg+xml" href="../assets/icon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="512x512" href="../assets/favicon-512.png">
+
+<meta property="og:title" content="ABUY — Loja">
+<meta property="og:description" content="Atrai. Filtra. Converte.">
+<meta property="og:image" content="https://abuystore.netlify.app/assets/og-loja.png">
+<meta property="og:url" content="https://abuystore.netlify.app/loja/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-void:#080808;
+    --bg-panel:#111111;
+    --bg-panel-2:#0d0d0d;
+    --accent-cyan:#00f5ff;
+    --accent-magenta:#ff2469;
+    --accent-red:#ff1a1a;
+    --accent-amber:#ffcb47;
+    --text-primary:#ffffff;
+    --text-dim:#888888;
+    --line:rgba(255,26,26,0.25);
+    --font-display:'Chakra Petch', sans-serif;
+    --font-mono:'IBM Plex Mono', monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg-void);color:var(--text-primary);font-family:var(--font-mono);line-height:1.6;}
+  a{color:inherit;text-decoration:none;}
+  ::selection{background:var(--accent-magenta);color:var(--bg-void);}
+  :focus-visible{outline:2px solid var(--accent-cyan);outline-offset:3px;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+  h1,h2,h3{font-family:var(--font-display);text-transform:uppercase;}
+
+  nav{display:flex;align-items:center;justify-content:space-between;padding:22px 24px;max-width:1080px;margin:0 auto;}
+  .logo{font-family:var(--font-display);font-weight:700;font-size:15px;letter-spacing:0.05em;}
+  .logo span{color:var(--accent-cyan);}
+  .status-pill{
+    font-size:11px;letter-spacing:0.1em;color:var(--accent-cyan);
+    border:1px solid rgba(0,245,255,0.3);padding:6px 12px;border-radius:2px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .status-pill::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent-red);animation:pulse 1.6s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.25;}}
+
+  header.hero{
+    padding:50px 0 60px;
+    border-bottom:1px solid var(--line);
+    background-image:
+      linear-gradient(rgba(10,14,22,0.94), rgba(10,14,22,0.98)),
+      repeating-linear-gradient(0deg, transparent 0 38px, var(--line) 38px 39px),
+      repeating-linear-gradient(90deg, transparent 0 38px, var(--line) 38px 39px);
+  }
+  .eyebrow{
+    font-size:12px;letter-spacing:0.25em;text-transform:uppercase;color:var(--accent-cyan);
+    display:flex;align-items:center;gap:10px;margin-bottom:16px;
+  }
+  .eyebrow::before{content:"";width:8px;height:8px;background:var(--accent-red);box-shadow:0 0 8px var(--accent-red);flex-shrink:0;}
+  header.hero h1{font-size:clamp(30px,4.4vw,46px);line-height:1.1;margin-bottom:14px;}
+  header.hero p{color:var(--text-dim);max-width:520px;font-size:15px;}
+
+  /* ---------- slider ---------- */
+  .slider{position:relative;overflow:hidden;border-bottom:1px solid var(--line);}
+  .slides{display:flex;transition:transform 0.6s cubic-bezier(0.4,0,0.2,1);}
+  .slide{
+    min-width:100%;
+    padding:56px 0 64px;
+    position:relative;
+    display:flex;align-items:center;
+  }
+  .slide__inner{max-width:1080px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;}
+  .slide__content{display:flex;flex-direction:column;gap:14px;}
+  .slide__tag{font-size:11px;letter-spacing:0.25em;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
+  .slide__tag::before{content:"";width:8px;height:8px;flex-shrink:0;}
+  .slide__title{font-family:var(--font-display);font-size:clamp(28px,3.8vw,44px);text-transform:uppercase;line-height:1.05;}
+  .slide__desc{font-size:14.5px;color:var(--text-dim);max-width:380px;line-height:1.6;}
+  .slide__cta{
+    display:inline-flex;align-items:center;gap:10px;
+    font-family:var(--font-mono);font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--bg-void);padding:13px 22px;margin-top:6px;cursor:pointer;border:none;
+    width:fit-content;transition:opacity 0.15s;
+  }
+  .slide__cta:hover{opacity:0.85;}
+  .slide__cta::after{content:"›";font-size:16px;}
+
+  .slide__media{
+    aspect-ratio:4/3;
+    display:flex;align-items:center;justify-content:center;
+    border:1px solid var(--line);
+    overflow:hidden;
+    position:relative;
+  }
+  .slide__media img{width:100%;height:100%;object-fit:cover;}
+  .slide__media .placeholder{display:flex;flex-direction:column;align-items:center;gap:12px;color:var(--text-dim);}
+  .slide__media .placeholder svg{width:52px;height:52px;}
+  .slide__media .placeholder span{font-size:11px;letter-spacing:0.1em;text-align:center;padding:0 20px;}
+
+  /* slide 1 — geral */
+  .slide--geral{
+    background-color:var(--bg-void);
+    background-image:
+      radial-gradient(circle at 10% 50%, rgba(255,26,26,0.15), transparent 50%),
+      repeating-linear-gradient(0deg, transparent 0 38px, rgba(255,26,26,0.06) 38px 39px),
+      repeating-linear-gradient(90deg, transparent 0 38px, rgba(255,26,26,0.06) 38px 39px);
+  }
+  .slide--geral .slide__tag{color:var(--accent-red);}
+  .slide--geral .slide__tag::before{background:var(--accent-red);}
+  .slide--geral .slide__title{color:var(--text-primary);}
+  .slide--geral .slide__cta{background:var(--accent-red);color:var(--bg-void);}
+  .slide--geral .slide__media{background:var(--bg-panel);background-image:radial-gradient(circle at 50% 50%, rgba(255,26,26,0.08), transparent 60%);}
+
+  /* slide 2 — físico */
+  .slide--fisico{
+    background-color:var(--bg-panel);
+    background-image:
+      radial-gradient(circle at 90% 50%, rgba(255,26,26,0.15), transparent 50%),
+      repeating-linear-gradient(0deg, transparent 0 38px, rgba(255,26,26,0.06) 38px 39px),
+      repeating-linear-gradient(90deg, transparent 0 38px, rgba(255,26,26,0.06) 38px 39px);
+  }
+  .slide--fisico .slide__tag{color:var(--accent-red);}
+  .slide--fisico .slide__tag::before{background:var(--accent-red);}
+  .slide--fisico .slide__title{color:var(--text-primary);}
+  .slide--fisico .slide__cta{background:var(--accent-red);color:var(--bg-void);}
+  .slide--fisico .slide__media{background:var(--bg-panel-2);}
+
+  /* slide 3 — digital */
+  .slide--digital{
+    background-color:var(--bg-panel-2);
+    background-image:
+      radial-gradient(circle at 20% 60%, rgba(0,245,255,0.12), transparent 50%),
+      repeating-linear-gradient(0deg, transparent 0 38px, rgba(0,245,255,0.05) 38px 39px),
+      repeating-linear-gradient(90deg, transparent 0 38px, rgba(0,245,255,0.05) 38px 39px);
+  }
+  .slide--digital .slide__tag{color:var(--accent-cyan);}
+  .slide--digital .slide__tag::before{background:var(--accent-cyan);}
+  .slide--digital .slide__title{color:var(--text-primary);}
+  .slide--digital .slide__cta{background:var(--accent-cyan);color:var(--bg-void);}
+  .slide--digital .slide__media{background:var(--bg-panel);}
+
+  /* controles */
+  .slider__controls{
+    position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
+    display:flex;gap:8px;
+  }
+  .slider__dot{
+    width:8px;height:8px;border-radius:50%;border:1px solid var(--text-dim);
+    background:transparent;cursor:pointer;transition:background 0.2s, border-color 0.2s;
+  }
+  .slider__dot.is-active{background:var(--accent-cyan);border-color:var(--accent-cyan);}
+
+  .slider__arrow{
+    position:absolute;top:50%;transform:translateY(-50%);
+    background:rgba(10,14,22,0.7);border:1px solid var(--line);
+    color:var(--text-dim);font-size:20px;width:36px;height:36px;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;transition:color 0.15s, border-color 0.15s;
+    font-family:var(--font-mono);
+  }
+  .slider__arrow:hover{color:var(--text-primary);border-color:var(--accent-cyan);}
+  .slider__arrow--prev{left:14px;}
+  .slider__arrow--next{right:14px;}
+
+  @media(max-width:760px){
+    .slide__inner{grid-template-columns:1fr;}
+    .slide__media{display:none;}
+  }
+
+  section.catalog{padding:60px 0 100px;}
+
+  .filters{display:flex;gap:10px;margin-bottom:28px;flex-wrap:wrap;}
+  .filter-btn{
+    font-family:var(--font-mono);
+    font-size:12px;letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--text-dim);
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    padding:10px 16px;
+    cursor:pointer;
+    transition:color 0.15s ease, border-color 0.15s ease;
+  }
+  .filter-btn:hover{color:var(--text-primary);}
+  .filter-btn.is-active{
+    color:var(--bg-void);
+    background:var(--accent-red);
+    border-color:var(--accent-red);
+  }
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));gap:1px;background:var(--line);border:1px solid var(--line);}
+
+  .card{
+    background:var(--bg-panel);
+    display:flex;flex-direction:column;
+    text-decoration:none;
+    transition:background 0.15s ease;
+  }
+  .card:hover{background:var(--bg-panel-2);border-color:var(--accent-red);}
+  .card__media{
+    aspect-ratio:4/3;
+    background:var(--bg-panel-2);
+    display:flex;align-items:center;justify-content:center;
+    border-bottom:1px solid var(--line);
+    overflow:hidden;
+    position:relative;
+  }
+  .card__media img{width:100%;height:100%;object-fit:cover;}
+  .card__media svg{width:48px;height:48px;color:var(--text-dim);}
+  .card__tag{
+    position:absolute;top:10px;left:10px;
+    font-size:10px;letter-spacing:0.1em;text-transform:uppercase;
+    padding:4px 8px;border:1px solid var(--line);background:rgba(10,14,22,0.85);
+    color:var(--accent-cyan);
+  }
+  .card__body{padding:18px 20px;display:flex;flex-direction:column;gap:8px;flex:1;}
+  .card__name{font-family:var(--font-display);font-size:16px;letter-spacing:0.02em;}
+  .card__desc{font-size:13px;color:var(--text-dim);flex:1;}
+  .card__footer{display:flex;align-items:center;justify-content:space-between;margin-top:6px;}
+  .card__price{font-family:var(--font-display);color:var(--accent-cyan);font-size:18px;}
+  .card__cta{font-size:12px;letter-spacing:0.05em;color:var(--text-primary);display:flex;align-items:center;gap:4px;}
+  .card__cta::after{content:"›";font-size:14px;color:var(--accent-cyan);}
+
+  .state-msg{
+    padding:60px 24px;text-align:center;color:var(--text-dim);font-size:14px;
+    border:1px solid var(--line);background:var(--bg-panel);grid-column:1 / -1;
+  }
+  .state-msg.is-error{color:var(--accent-magenta);}
+
+  footer{border-top:1px solid var(--line);padding:30px 0;color:var(--text-dim);font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;max-width:1080px;margin:0 auto;padding-left:24px;padding-right:24px;}
+</style>
+</head>
+<body>
+
+  <nav>
+    <a href="/" style="display:flex;align-items:center;gap:10px;">
+      <span style="font-size:12px;color:var(--text-dim);">←</span>
+      <div class="logo">ABU<span>Y</span></div>
+    </a>
+    <div class="status-pill">LOJA ONLINE</div>
+  </nav>
+
+  <header class="hero">
+    <div class="wrap">
+      <h1 style="display:flex;align-items:center;gap:16px;">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width:48px;height:48px;flex-shrink:0;">
+          <g stroke="#2de2e6" stroke-width="4" fill="none">
+            <line x1="50" y1="50" x2="50" y2="16"/>
+            <line x1="50" y1="50" x2="80" y2="67"/>
+            <line x1="50" y1="50" x2="20" y2="67"/>
+          </g>
+          <circle cx="50" cy="50" r="11" fill="#2de2e6"/>
+          <circle cx="50" cy="16" r="6.5" fill="#e7eef5"/>
+          <circle cx="80" cy="67" r="6.5" fill="#e7eef5"/>
+          <circle cx="20" cy="67" r="6.5" fill="#ff2469"/>
+        </svg>
+        ABU<span style="color:var(--accent-cyan)">Y</span>
+      </h1>
+      <p>Todos os produtos disponíveis agora. Clique em qualquer um pra ver os detalhes e finalizar a compra.</p>
+    </div>
+  </header>
+
+  <!-- ====== SLIDER ====== -->
+  <div class="slider" id="heroSlider">
+    <div class="slides" id="slidesTrack">
+
+      <!-- Slide 1 — apresentação geral -->
+      <div class="slide slide--geral">
+        <div class="slide__inner">
+          <div class="slide__content">
+            <div class="slide__tag">ABUY STORE</div>
+            <div class="slide__title">Digital<br>& Físico.<br>Num só lugar.</div>
+            <p class="slide__desc">E-books, cursos, produtos pra casa — tudo com checkout seguro via Mercado Pago, entregue direto pra você.</p>
+            <button class="slide__cta" onclick="document.getElementById('catalog').scrollIntoView({behavior:'smooth'})">Ver produtos</button>
+          </div>
+          <div class="slide__media">
+            <div class="placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+                <g stroke="#2de2e6"><line x1="12" y1="2" x2="12" y2="8"/><line x1="12" y1="12" x2="18" y2="16"/><line x1="12" y1="12" x2="6" y2="16"/></g>
+                <circle cx="12" cy="12" r="3" fill="#2de2e6"/>
+                <circle cx="12" cy="2" r="1.5" fill="#e7eef5"/>
+                <circle cx="18" cy="16" r="1.5" fill="#e7eef5"/>
+                <circle cx="6" cy="16" r="1.5" fill="#ff2469"/>
+              </svg>
+              <span>ABUY</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 2 — produtos físicos -->
+      <div class="slide slide--fisico">
+        <div class="slide__inner">
+          <div class="slide__content">
+            <div class="slide__tag">PRODUTOS FÍSICOS</div>
+            <div class="slide__title">Entrega<br>rastreada<br>pra você.</div>
+            <p class="slide__desc">Produtos selecionados, frete grátis incluso no preço, embalagem discreta — entregue onde você estiver no Brasil.</p>
+            <button class="slide__cta" onclick="document.querySelector('[data-filter=physical]').click();document.getElementById('catalog').scrollIntoView({behavior:'smooth'})">Ver físicos</button>
+          </div>
+          <div class="slide__media">
+            <!-- TROQUE por uma img real: <img src="URL_DA_FOTO" alt="Produto físico"> -->
+            <div class="placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" color="#ffcb47"><rect x="3" y="7" width="18" height="13" rx="1"/><path d="M8 7V5a4 4 0 0 1 8 0v2"/></svg>
+              <span>FOTO DO PRODUTO FÍSICO</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slide 3 — produtos digitais -->
+      <div class="slide slide--digital">
+        <div class="slide__inner">
+          <div class="slide__content">
+            <div class="slide__tag">PRODUTOS DIGITAIS</div>
+            <div class="slide__title">Acesso<br>imediato<br>por e-mail.</div>
+            <p class="slide__desc">E-books e guias com entrega automática — pague e receba o link de download na sua caixa de entrada em segundos.</p>
+            <button class="slide__cta" onclick="document.querySelector('[data-filter=digital]').click();document.getElementById('catalog').scrollIntoView({behavior:'smooth'})">Ver digitais</button>
+          </div>
+          <div class="slide__media">
+            <!-- TROQUE por capa do produto digital: <img src="URL_DA_CAPA" alt="Produto digital"> -->
+            <div class="placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" color="#ff2469"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              <span>CAPA DO PRODUTO DIGITAL</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <button class="slider__arrow slider__arrow--prev" id="sliderPrev">‹</button>
+    <button class="slider__arrow slider__arrow--next" id="sliderNext">›</button>
+    <div class="slider__controls">
+      <div class="slider__dot is-active" data-slide="0"></div>
+      <div class="slider__dot" data-slide="1"></div>
+      <div class="slider__dot" data-slide="2"></div>
+    </div>
+  </div>
+
+  <section class="catalog" id="catalog">
+    <div class="wrap">
+      <div class="filters" id="filters">
+        <button class="filter-btn is-active" data-filter="all">Todos</button>
+        <button class="filter-btn" data-filter="digital">Digital</button>
+        <button class="filter-btn" data-filter="physical">Físico</button>
+      </div>
+      <div class="grid" id="productGrid">
+        <div class="state-msg" id="stateMsg">Carregando catálogo...</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>ABUY © 2026</span>
+    <span>contato@seudominio.com</span>
+  </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // ---------- SLIDER ----------
+  const track = document.getElementById('slidesTrack');
+  const dots = document.querySelectorAll('.slider__dot');
+  let current = 0;
+  let autoTimer;
+
+  function goTo(idx){
+    current = (idx + 3) % 3;
+    track.style.transform = `translateX(-${current * 100}%)`;
+    dots.forEach((d,i) => d.classList.toggle('is-active', i === current));
+  }
+
+  function startAuto(){ autoTimer = setInterval(() => goTo(current + 1), 5000); }
+  function resetAuto(){ clearInterval(autoTimer); startAuto(); }
+
+  document.getElementById('sliderPrev').addEventListener('click', () => { goTo(current - 1); resetAuto(); });
+  document.getElementById('sliderNext').addEventListener('click', () => { goTo(current + 1); resetAuto(); });
+  dots.forEach(d => d.addEventListener('click', () => { goTo(+d.dataset.slide); resetAuto(); }));
+  startAuto();
+  // ---------- FIM SLIDER ----------
+
+  // ──────────────────────────────────────────────────────────
+  // CONFIGURAÇÃO — Project URL e a chave PÚBLICA (anon) do Supabase.
+  // Diferente da service_role key: esta aqui é segura pra ficar
+  // visível no código, desde que o RLS (regras de segurança) esteja
+  // configurado certo no banco — é exatamente isso que o arquivo
+  // update_catalogo.sql configura.
+  // ──────────────────────────────────────────────────────────
+  const SUPABASE_URL = 'https://cmkeabkmaivfrgyfisxx.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_fk41n_QrtzHJ_RoJss_Dww_N6IU-0LP';
+
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const grid = document.getElementById('productGrid');
+  const stateMsg = document.getElementById('stateMsg');
+  const filtersEl = document.getElementById('filters');
+
+  let allProducts = [];
+  let currentFilter = 'all';
+
+  function priceLabel(cents){
+    return 'R$ ' + (cents / 100).toFixed(2).replace('.', ',');
+  }
+
+  function placeholderIcon(){
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+      <rect x="3" y="7" width="18" height="13" rx="1"/><path d="M8 7V5a4 4 0 0 1 8 0v2"/>
+    </svg>`;
+  }
+
+  function renderCard(product){
+    const media = product.image_url
+      ? `<img src="${product.image_url}" alt="${product.name}" loading="lazy">`
+      : placeholderIcon();
+
+    return `
+      <a class="card" href="${product.slug}.html">
+        <div class="card__media">
+          <span class="card__tag">${product.type === 'digital' ? 'DIGITAL' : 'FÍSICO'}</span>
+          ${media}
+        </div>
+        <div class="card__body">
+          <div class="card__name">${product.name}</div>
+          <div class="card__desc">${product.description || ''}</div>
+          <div class="card__footer">
+            <div class="card__price">${priceLabel(product.price_cents)}</div>
+            <div class="card__cta">Ver produto</div>
+          </div>
+        </div>
+      </a>
+    `;
+  }
+
+  function renderGrid(){
+    const filtered = currentFilter === 'all'
+      ? allProducts
+      : allProducts.filter(p => p.type === currentFilter);
+
+    if (filtered.length === 0){
+      grid.innerHTML = '<div class="state-msg">Nenhum produto nessa categoria ainda.</div>';
+      return;
+    }
+
+    grid.innerHTML = filtered.map(renderCard).join('');
+  }
+
+  filtersEl.addEventListener('click', (e) => {
+    const btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+    currentFilter = btn.dataset.filter;
+    filtersEl.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('is-active', b === btn));
+    renderGrid();
+  });
+
+  async function loadCatalog(){
+    const { data, error } = await sb
+      .from('products')
+      .select('slug, name, description, price_cents, type, image_url')
+      .eq('active', true)
+      .order('created_at', { ascending: true });
+
+    if (error){
+      console.error(error);
+      grid.innerHTML = '<div class="state-msg is-error">Não foi possível carregar o catálogo agora.</div>';
+      return;
+    }
+
+    if (!data || data.length === 0){
+      grid.innerHTML = '<div class="state-msg">Nenhum produto disponível no momento.</div>';
+      return;
+    }
+
+    allProducts = data;
+    renderGrid();
+  }
+
+  loadCatalog();
+</script>
+
+</body>
+</html>
