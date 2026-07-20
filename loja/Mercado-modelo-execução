@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mercado. Modelo. Execução. | ABUYSTORE</title>
+
+<link rel="icon" type="image/svg+xml" href="../assets/icon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="512x512" href="../assets/favicon-512.png">
+
+<meta property="og:title" content="Mercado. Modelo. Execução. — Os 3 fatores que decidem quem enriquece">
+<meta property="og:description" content="Enriquecer não é sorte nem nicho certo. É lógica — três variáveis que dá pra analisar.">
+<meta property="og:image" content="https://abuy.store/assets/og-produto-mme.png">
+<meta property="og:url" content="https://abuy.store/loja/mercado-modelo-execucao.html">
+<meta property="og:type" content="product">
+<meta property="og:site_name" content="ABUYSTORE">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-void:#0a0e16;
+    --bg-panel:#10172a;
+    --bg-panel-2:#0d1320;
+    --accent-cyan:#2de2e6;
+    --accent-magenta:#ff2469;
+    --accent-amber:#ffcb47;
+    --text-primary:#e7eef5;
+    --text-dim:#7c8aa0;
+    --line:rgba(45,226,230,0.18);
+    --font-display:'Chakra Petch', sans-serif;
+    --font-mono:'IBM Plex Mono', monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg-void);color:var(--text-primary);font-family:var(--font-mono);line-height:1.6;overflow-x:hidden;}
+  a{color:inherit;text-decoration:none;}
+  ::selection{background:var(--accent-magenta);color:var(--bg-void);}
+  :focus-visible{outline:2px solid var(--accent-cyan);outline-offset:3px;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+  .eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:0.25em;text-transform:uppercase;color:var(--accent-cyan);display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+  .eyebrow::before{content:"";width:8px;height:8px;background:var(--accent-cyan);box-shadow:0 0 8px var(--accent-cyan);flex-shrink:0;}
+  h1,h2,h3{font-family:var(--font-display);text-transform:uppercase;letter-spacing:0.01em;}
+
+  .ticker{background:var(--bg-panel-2);border-bottom:1px solid var(--line);overflow:hidden;white-space:nowrap;padding:8px 0;font-size:11px;letter-spacing:0.15em;color:var(--text-dim);}
+  .ticker__track{display:inline-block;padding-left:100%;animation:ticker 28s linear infinite;}
+  .ticker__track span{color:var(--accent-cyan);}
+  @keyframes ticker{from{transform:translateX(0);}to{transform:translateX(-100%);}}
+
+  nav{display:flex;align-items:center;justify-content:space-between;padding:22px 24px;max-width:1080px;margin:0 auto;}
+  .logo{font-family:var(--font-display);font-weight:700;font-size:18px;letter-spacing:0.08em;display:flex;align-items:center;gap:14px;}
+  .logo .back{font-size:13px;color:var(--text-dim);letter-spacing:0.05em;font-family:var(--font-mono);font-weight:400;text-transform:none;}
+  .logo .store{color:var(--accent-cyan);}
+  .status-pill{font-size:11px;letter-spacing:0.1em;color:var(--accent-amber);border:1px solid rgba(255,203,71,0.4);padding:6px 12px;border-radius:2px;display:flex;align-items:center;gap:8px;}
+  .status-pill::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent-amber);animation:pulse 1.6s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.25;}}
+
+  .hero{position:relative;padding:60px 0 90px;background-image:linear-gradient(rgba(10,14,22,0.94), rgba(10,14,22,0.98)),repeating-linear-gradient(0deg, transparent 0 38px, var(--line) 38px 39px),repeating-linear-gradient(90deg, transparent 0 38px, var(--line) 38px 39px);border-bottom:1px solid var(--line);}
+  .hero__grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:48px;align-items:center;}
+  .hero h1{font-size:clamp(34px, 5vw, 58px);line-height:1.05;margin-bottom:22px;}
+  .hero h1 .c{color:var(--accent-cyan);}
+  .hero p.lede{color:var(--text-dim);font-size:16px;max-width:480px;margin-bottom:32px;}
+  .cta-btn{font-family:var(--font-mono);font-weight:600;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;color:var(--bg-void);background:var(--accent-cyan);border:none;padding:16px 28px;display:inline-flex;align-items:center;gap:12px;cursor:pointer;box-shadow:0 0 0 1px rgba(45,226,230,0.4), 0 0 28px rgba(45,226,230,0.35);transition:transform 0.15s ease, box-shadow 0.15s ease;}
+  .cta-btn:hover{transform:translateY(-2px);box-shadow:0 0 0 1px rgba(45,226,230,0.6), 0 0 40px rgba(45,226,230,0.55);}
+  .cta-btn::after{content:"›";font-size:18px;}
+  .cta-note{margin-top:14px;font-size:12px;color:var(--text-dim);letter-spacing:0.05em;}
+
+  .scanner{background:var(--bg-panel);border:1px solid var(--line);position:relative;padding:18px;}
+  .scanner__head{display:flex;justify-content:space-between;font-size:11px;letter-spacing:0.1em;color:var(--text-dim);margin-bottom:14px;}
+  .scanner__body{position:relative;height:280px;border:1px solid var(--line);background:var(--bg-panel-2);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .scanner__body svg{width:160px;height:160px;}
+  .scanline{position:absolute;left:0;top:0;width:100%;height:3px;background:linear-gradient(90deg, transparent, var(--accent-cyan), transparent);box-shadow:0 0 14px var(--accent-cyan);}
+  @media (prefers-reduced-motion: no-preference){.scanline{animation:scan 2.6s ease-in-out infinite;}}
+  @keyframes scan{0%{top:0;}50%{top:96%;}100%{top:0;}}
+  .scanner__readout{margin-top:14px;font-size:13px;letter-spacing:0.04em;min-height:20px;}
+  .scanner__readout .tag{font-weight:600;}
+  .scanner__bar{margin-top:10px;height:4px;width:100%;background:rgba(255,255,255,0.06);position:relative;overflow:hidden;}
+  .scanner__bar i{position:absolute;left:0;top:0;height:100%;background:var(--accent-cyan);width:0%;transition:width 0.6s ease, background 0.6s ease;}
+
+  section{padding:90px 0;}
+  .section-head{max-width:620px;margin-bottom:48px;}
+  .section-head h2{font-size:clamp(26px,3.4vw,38px);line-height:1.15;}
+
+  .diagnostic{border:1px solid var(--line);background:var(--bg-panel);}
+  .diag-row{display:grid;grid-template-columns:180px 1fr;gap:20px;padding:22px 24px;border-bottom:1px solid var(--line);}
+  .diag-row:last-child{border-bottom:none;}
+  .diag-row .code{font-family:var(--font-mono);color:var(--accent-magenta);font-size:13px;font-weight:600;letter-spacing:0.03em;}
+  .diag-row p{color:var(--text-dim);font-size:14.5px;}
+  .diag-row p strong{color:var(--text-primary);font-weight:500;}
+
+  .method-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+  .mod{background:var(--bg-panel);padding:32px 26px;position:relative;}
+  .mod__code{font-size:11px;letter-spacing:0.15em;color:var(--text-dim);margin-bottom:18px;}
+  .mod__icon{margin-bottom:18px;width:40px;height:40px;}
+  .mod h3{font-size:22px;margin-bottom:10px;}
+  .mod--mercado h3{color:var(--accent-cyan);}
+  .mod--modelo h3{color:var(--accent-amber);}
+  .mod--execucao h3{color:var(--accent-magenta);}
+  .mod p{color:var(--text-dim);font-size:14px;}
+  .mod__arrow{position:absolute;right:-13px;top:50%;transform:translateY(-50%);font-size:20px;color:var(--text-dim);z-index:2;}
+  .mod:last-child .mod__arrow{display:none;}
+
+  .toc{border:1px solid var(--line);background:var(--bg-panel-2);font-size:13.5px;}
+  .toc__bar{display:flex;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--line);color:var(--text-dim);font-size:11px;letter-spacing:0.1em;}
+  .toc__row{display:flex;justify-content:space-between;gap:20px;padding:16px 20px;border-bottom:1px solid var(--line);}
+  .toc__row:last-child{border-bottom:none;}
+  .toc__name{display:flex;gap:14px;align-items:baseline;color:var(--text-primary);}
+  .toc__name .num{color:var(--accent-cyan);}
+  .toc__meta{color:var(--text-dim);white-space:nowrap;}
+
+  .access-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);}
+  .access-col{background:var(--bg-panel);padding:30px 28px;}
+  .access-col h3{font-size:15px;letter-spacing:0.08em;margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+  .access-col.granted h3{color:var(--accent-cyan);}
+  .access-col.denied h3{color:var(--text-dim);}
+  .access-col ul{list-style:none;display:flex;flex-direction:column;gap:12px;}
+  .access-col li{font-size:14px;color:var(--text-dim);display:flex;gap:10px;}
+  .access-col.granted li::before{content:"✓";color:var(--accent-cyan);}
+  .access-col.denied li::before{content:"×";color:var(--text-dim);}
+
+  .final{background:var(--bg-panel);border:1px solid var(--line);padding:50px;text-align:center;position:relative;}
+  .final::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 0%, rgba(45,226,230,0.12), transparent 60%);pointer-events:none;}
+  .final h2{font-size:clamp(24px,3.2vw,34px);margin-bottom:14px;}
+  .final p{color:var(--text-dim);max-width:480px;margin:0 auto 30px;font-size:14.5px;}
+  .price{font-family:var(--font-display);font-size:42px;color:var(--accent-cyan);margin-bottom:6px;}
+  .price small{font-size:14px;color:var(--text-dim);font-family:var(--font-mono);}
+  #paymentBrick_container{position:relative;z-index:1;max-width:440px;margin:0 auto;text-align:left;}
+  .payment-result{position:relative;z-index:1;max-width:440px;margin:16px auto 0;font-size:13px;letter-spacing:0.03em;text-align:left;padding:0 2px;}
+  .payment-result.is-ok{color:var(--accent-cyan);}
+  .payment-result.is-pending{color:var(--accent-amber);}
+  .payment-result.is-error{color:var(--accent-magenta);}
+
+  footer{border-top:1px solid var(--line);padding:30px 0;color:var(--text-dim);font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+  footer .store-mark{color:var(--accent-cyan);letter-spacing:0.1em;}
+
+  @media (max-width:760px){
+    .hero__grid{grid-template-columns:1fr;}
+    .method-grid{grid-template-columns:1fr;}
+    .mod__arrow{display:none;}
+    .access-grid{grid-template-columns:1fr;}
+    .diag-row{grid-template-columns:1fr;gap:8px;}
+    .final{padding:36px 22px;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker__track">
+      MERCADO · MODELO · <span>EXECUÇÃO</span> &nbsp;&nbsp;&nbsp;&nbsp;
+      ACESSO IMEDIATO APÓS CONFIRMAÇÃO DE PAGAMENTO &nbsp;&nbsp;&nbsp;&nbsp;
+      MERCADO · MODELO · <span>EXECUÇÃO</span> &nbsp;&nbsp;&nbsp;&nbsp;
+      ACESSO IMEDIATO APÓS CONFIRMAÇÃO DE PAGAMENTO &nbsp;&nbsp;&nbsp;&nbsp;
+    </div>
+  </div>
+
+  <nav>
+    <a href="index.html" class="logo">
+      <span class="back">← LOJA</span>
+      <span class="store">ABUYSTORE</span>
+    </a>
+    <div class="status-pill">SISTEMA ONLINE</div>
+  </nav>
+
+  <header class="hero">
+    <div class="wrap hero__grid">
+      <div>
+        <div class="eyebrow">PROTOCOLO DE DECISÃO ECONÔMICA</div>
+        <h1>Enriquecer não é<br>sorte. É <span class="c">lógica.</span></h1>
+        <p class="lede">Três variáveis decidem quem enriquece e quem trabalha muito e fica no mesmo lugar: o mercado escolhido, o modelo de negócio dentro dele, e a disposição de fazer o que dá resultado — não só o que se ama.</p>
+        <a href="#final" class="cta-btn">Analisar meu caso</a>
+        <div class="cta-note">E-book digital · entrega automática por e-mail</div>
+      </div>
+
+      <div class="scanner">
+        <div class="scanner__head">
+          <span>ANALISADOR_DE_MERCADO.exe</span>
+          <span id="scanClock">00:00:00</span>
+        </div>
+        <div class="scanner__body">
+          <div class="scanline" aria-hidden="true"></div>
+          <svg viewBox="0 0 200 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="10" y1="130" x2="190" y2="130" stroke="#2de2e6" stroke-opacity="0.25"/>
+            <polyline points="20,110 55,90 90,98 125,55 160,35" stroke="#2de2e6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="160" cy="35" r="4.5" fill="#2de2e6"/>
+            <polyline points="20,55 55,62 90,58 125,85 160,100" stroke="#7c8aa0" stroke-width="2.4" stroke-dasharray="4 3" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="scanner__readout">STATUS: <span class="tag" id="scanTag" style="color:var(--accent-amber)">MEDINDO MERCADO...</span></div>
+        <div class="scanner__bar"><i id="scanBar"></i></div>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">DIAGNÓSTICO</div>
+        <h2>"Meu nicho não dá pra enriquecer" é a pergunta errada</h2>
+      </div>
+      <div class="diagnostic">
+        <div class="diag-row">
+          <div class="code">ERR_ACHOU_QUE_E_SORTE</div>
+          <p><strong>Tratar enriquecimento como sorte ou nicho certo.</strong> O mesmo nicho comporta modelos de negócio com tetos de lucro completamente diferentes.</p>
+        </div>
+        <div class="diag-row">
+          <div class="code">ERR_MERCADO_EM_RETRACAO</div>
+          <p><strong>Nadar contra a correnteza sem perceber.</strong> Se esforçar num mercado que encolhe é trabalhar em dobro pra ficar no mesmo lugar.</p>
+        </div>
+        <div class="diag-row">
+          <div class="code">ERR_SO_O_QUE_AMA</div>
+          <p><strong>Insistir em gastar 100% do tempo só no que gosta.</strong> Na maioria dos casos, o resultado exige fazer o que precisa — não o que dá prazer.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">PROTOCOLO M.M.E.</div>
+        <h2>As 3 variáveis, nessa ordem, por um motivo</h2>
+      </div>
+      <div class="method-grid">
+        <div class="mod mod--mercado">
+          <div class="mod__code">MOD.01</div>
+          <svg class="mod__icon" viewBox="0 0 40 40" fill="none" stroke="var(--accent-cyan)" stroke-width="2">
+            <polyline points="5,32 14,22 22,26 32,10"/><circle cx="32" cy="10" r="2.4" fill="var(--accent-cyan)" stroke="none"/>
+          </svg>
+          <h3>Mercado</h3>
+          <p>Tamanho e direção decidem o teto — mercado em expansão puxa seu negócio junto, mesmo sem esforço extra.</p>
+          <span class="mod__arrow">›</span>
+        </div>
+        <div class="mod mod--modelo">
+          <div class="mod__code">MOD.02</div>
+          <svg class="mod__icon" viewBox="0 0 40 40" fill="none" stroke="var(--accent-amber)" stroke-width="2">
+            <circle cx="10" cy="20" r="6"/><rect x="22" y="8" width="14" height="8"/><rect x="22" y="18" width="14" height="8"/><rect x="22" y="28" width="14" height="8"/>
+          </svg>
+          <h3>Modelo</h3>
+          <p>Como você gera valor e captura parte dele — o mesmo nicho comporta modelos com tetos radicalmente diferentes.</p>
+          <span class="mod__arrow">›</span>
+        </div>
+        <div class="mod mod--execucao">
+          <div class="mod__code">MOD.03</div>
+          <svg class="mod__icon" viewBox="0 0 40 40" fill="none" stroke="var(--accent-magenta)" stroke-width="2">
+            <circle cx="20" cy="20" r="15"/><path d="M20 5 A15 15 0 0 1 21 5" stroke-width="4"/>
+          </svg>
+          <h3>Execução</h3>
+          <p>Fazer o que dá resultado, não só o que se ama — a diferença entre quem chega lá e quem só planeja.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">CONTEÚDO</div>
+        <h2>O que tem dentro do e-book</h2>
+      </div>
+      <div class="toc">
+        <div class="toc__bar"><span>/mercado-modelo-execucao/</span><span>7 MÓDULOS</span></div>
+        <div class="toc__row"><div class="toc__name"><span class="num">00</span><span>diagnostico.pdf</span></div><div class="toc__meta">por que "meu nicho não dá" é a pergunta errada</div></div>
+        <div class="toc__row"><div class="toc__name"><span class="num">01</span><span>mercado-tam.pdf</span></div><div class="toc__meta">tamanho e direção decidem o teto</div></div>
+        <div class="toc__row"><div class="toc__name"><span class="num">02</span><span>modelo-de-negocio.pdf</span></div><div class="toc__meta">como você gera e captura valor</div></div>
+        <div class="toc__row"><div class="toc__name"><span class="num">03</span><span>execucao.pdf</span></div><div class="toc__meta">fazer o que dá resultado, não o que se ama</div></div>
+        <div class="toc__row"><div class="toc__name"><span class="num">04</span><span>sintese.pdf</span></div><div class="toc__meta">as perguntas que analisam seu caso</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">CONTROLE DE ACESSO</div>
+        <h2>Pra quem é — e pra quem não é</h2>
+      </div>
+      <div class="access-grid">
+        <div class="access-col granted">
+          <h3>ACESSO CONCEDIDO</h3>
+          <ul>
+            <li>Você acha que seu nicho "não dá pra enriquecer" e nunca separou mercado, modelo e execução.</li>
+            <li>Você está disposto a considerar outro modelo dentro do mesmo mercado que já conhece.</li>
+            <li>Você aceita fazer o que precisa, não só o que ama, pra chegar no resultado.</li>
+          </ul>
+        </div>
+        <div class="access-col denied">
+          <h3>ACESSO NÃO RECOMENDADO</h3>
+          <ul>
+            <li>Você quer só confirmação de que seu nicho é "impossível".</li>
+            <li>Você não está disposto a mudar nada no que já faz.</li>
+            <li>Você busca fórmula de enriquecimento sem esforço.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="final">
+    <div class="wrap">
+      <div class="final">
+        <div class="eyebrow" style="justify-content:center">EXECUTAR PROTOCOLO</div>
+        <h2>Mercado. Modelo. Execução.</h2>
+        <p>Acesso ao e-book completo, com as três lentes de análise que decidem quem enriquece — entrega automática por e-mail assim que o pagamento é confirmado.</p>
+        <div class="price">R$ 37<small> · pagamento único</small></div>
+        <div class="cta-note" style="margin-bottom:18px">Pix, cartão ou boleto via Mercado Pago</div>
+        <div style="max-width:440px;margin:0 auto 16px;text-align:left;">
+          <label for="customerPhone" style="display:block;font-size:13px;margin-bottom:6px;color:var(--text-dim);">
+            WhatsApp (com DDD)
+          </label>
+          <input
+            type="tel"
+            id="customerPhone"
+            placeholder="(11) 99999-9999"
+            required
+            style="width:100%;padding:12px 14px;border-radius:4px;border:1px solid var(--line);background:var(--bg-panel-2);color:var(--text-primary);font-family:var(--font-mono);font-size:14px;"
+          >
+        </div>
+        <div id="paymentBrick_container"></div>
+        <div id="paymentResult" class="payment-result" role="status" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="wrap">
+    <span>MERCADO · MODELO · EXECUÇÃO © 2026 · <span class="store-mark">ABUYSTORE</span></span>
+    <span>contato@abuy.store</span>
+  </footer>
+
+<script src="https://sdk.mercadopago.com/js/v2"></script>
+<script>
+  // ──────────────────────────────────────────────────────────
+  // CONFIGURAÇÃO DESTE PRODUTO
+  // Isso aqui é a ÚNICA coisa que muda no código quando você
+  // duplicar esta página pra vender um produto diferente.
+  // O valor precisa ser igual ao "slug" cadastrado no Supabase.
+  // ──────────────────────────────────────────────────────────
+  const PRODUCT_SLUG = 'mercado-modelo-execucao';
+
+  // Public Key do Mercado Pago — essa é segura pra ficar visível aqui,
+  // ela só identifica a conta, não autoriza cobrança sozinha.
+  // (de teste por enquanto — troca pela de produção quando for ao ar)
+  const MP_PUBLIC_KEY = 'APP_USR-81679c8c-d94a-4940-ba7a-9877ed2b61de';
+
+  // ──────────────────────────────────────────────────────────
+  // PAYMENT BRICK — formulário de pagamento embutido
+  // ──────────────────────────────────────────────────────────
+  const mp = new MercadoPago(MP_PUBLIC_KEY, { locale: 'pt-BR' });
+  const bricksBuilder = mp.bricks();
+  const resultEl = document.getElementById('paymentResult');
+
+  function showResult(content, kind){
+    resultEl.innerHTML = content;
+    resultEl.className = 'payment-result ' + (kind ? ('is-' + kind) : '');
+  }
+
+  function showPixResult(pix){
+    const html = `
+      <p>Pagamento Pix gerado! Escaneie o QR Code ou copie o código abaixo no app do seu banco:</p>
+      ${pix.qr_code_base64 ? `<img src="data:image/png;base64,${pix.qr_code_base64}" alt="QR Code Pix" style="width:180px;height:180px;display:block;margin:12px 0;border:1px solid var(--line);background:#fff;">` : ''}
+      ${pix.qr_code ? `
+        <textarea readonly rows="3" style="width:100%;font-size:11px;background:var(--bg-panel-2);color:var(--text-dim);border:1px solid var(--line);padding:8px;margin-bottom:8px;font-family:var(--font-mono);" onclick="this.select()">${pix.qr_code}</textarea>
+        <button type="button" id="copyPixBtn" class="cta-btn" style="font-size:12px;padding:8px 14px;">Copiar código Pix</button>
+      ` : ''}
+      <p style="margin-top:12px;">Depois de pagar, a confirmação chega automaticamente por e-mail.</p>
+    `;
+    showResult(html, 'pending');
+
+    const btn = document.getElementById('copyPixBtn');
+    if (btn){
+      btn.addEventListener('click', () => {
+        navigator.clipboard.writeText(pix.qr_code).then(() => {
+          btn.textContent = 'Copiado!';
+          setTimeout(() => { btn.textContent = 'Copiar código Pix'; }, 2000);
+        });
+      });
+    }
+  }
+
+  bricksBuilder.create('payment', 'paymentBrick_container', {
+    initialization: {
+      amount: 37.00, // valor só pra exibição do formulário — quem decide o valor cobrado de verdade é o backend
+    },
+    customization: {
+      visual: { style: { theme: 'dark' } },
+      paymentMethods: {
+        creditCard: 'all',
+        debitCard: 'all',
+        bankTransfer: 'all', // Pix
+        ticket: 'all',       // boleto
+      },
+    },
+    callbacks: {
+      onReady: () => {
+        // formulário pronto
+      },
+      onSubmit: ({ selectedPaymentMethod, formData }) => {
+        return new Promise((resolve) => {
+          const customerPhone = document.getElementById('customerPhone')?.value || '';
+
+          if (!customerPhone.trim()) {
+            showResult('Por favor, preencha seu WhatsApp antes de continuar.', 'error');
+            resolve();
+            return;
+          }
+
+          showResult('Processando pagamento...', 'pending');
+          fetch('/.netlify/functions/create-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              product_slug: PRODUCT_SLUG,
+              formData,
+              customer_phone: customerPhone,
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.status === 'approved') {
+                showResult('Pagamento aprovado! Você vai receber o e-book por e-mail em alguns instantes.', 'ok');
+              } else if (data.status === 'pending' && data.pix) {
+                showPixResult(data.pix);
+              } else if (data.status === 'pending') {
+                showResult('Pagamento em processamento (normal em boleto). A confirmação chega por e-mail.', 'pending');
+              } else if (data.error) {
+                showResult('Não foi possível processar: ' + data.error, 'error');
+              } else {
+                showResult('Pagamento recusado. Tente outro cartão ou meio de pagamento.', 'error');
+              }
+              resolve();
+            })
+            .catch((error) => {
+              console.error(error);
+              showResult('Erro de conexão ao processar o pagamento. Tente novamente.', 'error');
+              resolve();
+            });
+        });
+      },
+      onError: (error) => {
+        console.error(error);
+        showResult('Algo deu errado ao carregar o formulário. Confira se a Public Key está certa.', 'error');
+      },
+    },
+  });
+
+  // clock
+  const clockEl = document.getElementById('scanClock');
+  function tick(){
+    const d = new Date();
+    const p = n => String(n).padStart(2,'0');
+    clockEl.textContent = `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+  }
+  tick(); setInterval(tick, 1000);
+
+  // scanner status cycle
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const tagEl = document.getElementById('scanTag');
+  const barEl = document.getElementById('scanBar');
+  const stages = [
+    {label:'MEDINDO MERCADO...', color:'var(--accent-amber)', width:'30%'},
+    {label:'CRUZANDO MODELO...', color:'var(--accent-cyan)', width:'65%'},
+    {label:'EXECUÇÃO VALIDADA ✓', color:'var(--accent-magenta)', width:'100%'}
+  ];
+  let i = 0;
+  function setStage(idx){
+    const s = stages[idx];
+    tagEl.textContent = s.label;
+    tagEl.style.color = s.color;
+    barEl.style.width = s.width;
+    barEl.style.background = s.color;
+  }
+  setStage(0);
+  if(!reduce){
+    setInterval(()=>{ i = (i+1) % stages.length; setStage(i); }, 2600);
+  }
+</script>
+
+</body>
+</html>
