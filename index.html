@@ -488,7 +488,6 @@ h2 {
 <!-- ===== CATÁLOGO ===== -->
 <section class="catalog" id="catalog">
   <div class="wrap">
-    
     <div class="grid" id="productGrid">
       <div class="state-msg">Carregando catálogo...</div>
     </div>
@@ -697,6 +696,68 @@ document.getElementById('leadSubmit').addEventListener('click', async()=>{
         });
     });
 </script>
+</script>
+<script>
+  // 1. Configurações do Supabase
+  const SUPABASE_URL = 'https://cmkeabkmaivfrgyfisex.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_fk41n_QrtzHJ_RoJss_Dww_N6IU-0LP'; // <--- Cole sua chave pública (sb_publishable_...) aqui
+
+  // 2. Inicializa o cliente Supabase
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // 3. Função para buscar os serviços e renderizar no grid
+  async function loadServices() {
+    const grid = document.getElementById('productGrid');
+
+    try {
+      // Busca todas as colunas da tabela 'Services'
+      const { data: services, error } = await supabaseClient
+        .from('services')
+        .select('*');
+const { data: products, errorproducterror } = await supabaseClient
+        .from('products')
+        .select('*');
+  
+      if (error) throw error;
+
+      // Se não encontrar nenhum serviço
+      if (!services || services.length === 0) {
+        grid.innerHTML = '<p class="state-msg">Nenhum serviço encontrado.</p>';
+        return;
+      }
+
+      // Limpa a mensagem de carregamento
+      grid.innerHTML = '';
+
+      // Gera o HTML para cada serviço encontrado
+      services.forEach(service => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <h3>${service.name || 'Serviço sem nome'}</h3>
+          <p>${service.description || 'Sem descrição disponível.'}</p>
+          <span class="price">R$ ${service.price ? service.price.toFixed(2) : '0,00'}</span>
+        `;
+        grid.appendChild(card);
+     // Gera o HTML para cada serviço encontrado
+      products.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <h3>${product.name || 'produto sem nome'}</h3>
+          <p>${product.description || 'Sem descrição disponível.'}</p>
+          <span class="price">R$ ${product.price ? product.price.toFixed(2) : '0,00'}</span>
+        `;
+        grid.appendChild(card); });
+
+    } catch (err) {
+      console.error('Erro ao carregar serviços:', err);
+      grid.innerHTML = '<p class="state-msg">Erro ao carregar os serviços. Tente novamente mais tarde.</p>';
+    }
+  }
+
+  // Executa a função assim que o DOM estiver carregado
+  document.addEventListener('DOMContentLoaded', loadServices);
 </script>
 </body>
   </html>
