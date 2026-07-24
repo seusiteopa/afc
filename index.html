@@ -53,7 +53,6 @@
     gap:16px;
   }
 
-  /* Logo com animação de flutuar esq/dir */
   .topbar__logo{
     flex-shrink:0;
     font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:0.06em;
@@ -68,7 +67,6 @@
     75%{transform:translateX(-4px);}
   }
 
-  /* Ticker central com informações */
   .topbar__ticker{
     flex:1;overflow:hidden;height:100%;
     display:flex;align-items:center;
@@ -97,7 +95,6 @@
     100%{transform:translateX(-50%);}
   }
 
-  /* Lado direito: WhatsApp + pill */
   .topbar__right{flex-shrink:0;display:flex;align-items:center;gap:10px;}
   .topbar__wa{
     display:flex;align-items:center;gap:6px;
@@ -167,6 +164,23 @@
   .filter-btn{font-family:var(--mono);font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--dim);background:var(--panel);border:1px solid var(--line);padding:10px 16px;cursor:pointer;transition:color 0.15s,border-color 0.15s;}
   .filter-btn:hover{color:var(--white);}
   .filter-btn.is-active{color:var(--bg);background:var(--red);border-color:var(--red);}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;}
+  .state-msg{grid-column:1/-1;text-align:center;padding:60px 0;color:var(--dim);font-size:13px;letter-spacing:0.05em;}
+  .state-msg.is-error{color:var(--red);}
+  .card{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);overflow:hidden;transition:border-color 0.2s,transform 0.2s;}
+  .card:hover{border-color:var(--cyan);transform:translateY(-2px);}
+  .card__media{position:relative;aspect-ratio:4/3;background:var(--panel2);display:flex;align-items:center;justify-content:center;color:var(--dim);}
+  .card__media img{width:100%;height:100%;object-fit:cover;}
+  .card__media svg{width:40px;height:40px;}
+  .card__tag{position:absolute;top:10px;left:10px;font-size:10px;letter-spacing:0.1em;background:rgba(8,8,8,0.85);border:1px solid var(--line);color:var(--cyan);padding:4px 8px;}
+  .card__body{padding:16px;display:flex;flex-direction:column;gap:8px;flex:1;}
+  .card__name{font-family:var(--display);font-size:15px;text-transform:uppercase;}
+  .card__desc{font-size:12.5px;color:var(--dim);line-height:1.5;flex:1;}
+  .card__footer{display:flex;align-items:center;justify-content:space-between;margin-top:6px;}
+  .card__price{font-family:var(--display);font-size:16px;color:var(--cyan);}
+  .card__cta{font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--dim);}
+  .card:hover .card__cta{color:var(--white);}
 
   /* ===== FOOTER ===== */
   footer{border-top:1px solid var(--line);padding:24px;color:var(--dim);font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
@@ -248,6 +262,7 @@
     .slide__media{display:none;}
     .topbar__ticker{display:none;}
   }
+
 /* Estilos Gerais de Organização */
 .container {
     max-width: 800px;
@@ -322,7 +337,6 @@ h2 {
     background: #f7fafc;
 }
 
-/* Ícone de seta simples usando CSS */
 .faq-question::after {
     content: '❯';
     font-size: 0.8rem;
@@ -366,7 +380,7 @@ h2 {
       <circle cx="80" cy="67" r="6" fill="#e7eef5"/>
       <circle cx="20" cy="67" r="6" fill="#ff2469"/>
     </svg>
-    ABUY.STORE</span>
+    ABUY.STORE
   </a>
 
   <div class="topbar__ticker" aria-hidden="true">
@@ -385,7 +399,6 @@ h2 {
       <span class="sep">·</span>
       <span>ATENDIMENTO VIA WHATSAPP</span>
       <span class="sep">·</span>
-      <!-- duplicata pra loop infinito sem corte visual -->
       <span>LOJA ABUY STORE</span>
       <span class="sep">·</span>
       <span class="hi">ENTREGA DIGITAL IMEDIATA</span>
@@ -396,7 +409,7 @@ h2 {
       <span class="sep">·</span>
       <span>E-BOOKS E GUIAS TÉCNICOS</span>
       <span class="sep">·</span>
-      <span class="hi">PRODUTOS FÍSISCOS COM FRETE GRÁTIS</span>
+      <span class="hi">PRODUTOS FÍSICOS COM FRETE GRÁTIS</span>
       <span class="sep">·</span>
       <span>ATENDIMENTO VIA WHATSAPP</span>
       <span class="sep">·</span>
@@ -488,6 +501,11 @@ h2 {
 <!-- ===== CATÁLOGO ===== -->
 <section class="catalog" id="catalog">
   <div class="wrap">
+    <div class="filters" id="filters">
+      <button class="filter-btn is-active" data-filter="all">Todos</button>
+      <button class="filter-btn" data-filter="digital">Digital</button>
+      <button class="filter-btn" data-filter="physical">Físico</button>
+    </div>
     <div class="grid" id="productGrid">
       <div class="state-msg">Carregando catálogo...</div>
     </div>
@@ -512,7 +530,6 @@ h2 {
         <p class="subtitle">Tire suas dúvidas rápidas aqui.</p>
 
         <div class="faq-container">
-            <!-- Pergunta 1 -->
             <div class="faq-item">
                 <button class="faq-question">Como funciona o serviço?</button>
                 <div class="faq-answer">
@@ -520,7 +537,6 @@ h2 {
                 </div>
             </div>
 
-            <!-- Pergunta 2 -->
             <div class="faq-item">
                 <button class="faq-question">Quais são as formas de pagamento aceitas?</button>
                 <div class="faq-answer">
@@ -528,7 +544,6 @@ h2 {
                 </div>
             </div>
 
-            <!-- Pergunta 3 -->
             <div class="faq-item">
                 <button class="faq-question">Posso cancelar minha assinatura a qualquer momento?</button>
                 <div class="faq-answer">
@@ -538,7 +553,8 @@ h2 {
         </div>
     </div>
 </section>
-  <footer>
+
+<footer>
   <span>ABUY STORE © 2026</span>
   <span>contato@abuy.store</span>
 </footer>
@@ -653,12 +669,10 @@ document.getElementById('leadSubmit').addEventListener('click', async()=>{
   if(!phone && !email){ return; }
   const tel = phone.replace(/\D/g,'');
   try{
-    // Salva na tabela leads do Supabase
     await sb.from('leads').upsert(
       { telefone: tel||null, email: email||null, origem: 'popup_loja', created_at: new Date().toISOString() },
       { onConflict: tel ? 'telefone' : 'email' }
     );
-    // Se tiver telefone, também garante linha na tabela conversas pro bot pegar
     if(tel){
       await sb.from('conversas').upsert(
         { telefone: tel, historico: [], status: 'lead', produto_interesse: null },
@@ -670,94 +684,30 @@ document.getElementById('leadSubmit').addEventListener('click', async()=>{
   document.getElementById('popupSuccess').style.display='block';
   setTimeout(closePopup, 2800);
 });
+</script>
+
 <script>
-    document.querySelectorAll('.faq-question').forEach(button => {
-        button.addEventListener('click', () => {
-            const faqItem = button.parentElement;
-            const answer = button.nextElementSibling;
+document.querySelectorAll('.faq-question').forEach(button => {
+    button.addEventListener('click', () => {
+        const faqItem = button.parentElement;
+        const answer = button.nextElementSibling;
 
-            // Fecha outros itens abertos (opcional, estilo Accordion clássico)
-            document.querySelectorAll('.faq-item').forEach(item => {
-                if (item !== faqItem) {
-                    item.classList.remove('active');
-                    item.querySelector('.faq-answer').style.maxHeight = null;
-                }
-            });
-
-            // Alterna a classe ativa no item clicado
-            faqItem.classList.toggle('active');
-
-            // Controla a altura da resposta para efeito de transição
-            if (faqItem.classList.contains('active')) {
-                answer.style.maxHeight = answer.scrollHeight + "px";
-            } else {
-                answer.style.maxHeight = null;
+        document.querySelectorAll('.faq-item').forEach(item => {
+            if (item !== faqItem) {
+                item.classList.remove('active');
+                item.querySelector('.faq-answer').style.maxHeight = null;
             }
         });
+
+        faqItem.classList.toggle('active');
+
+        if (faqItem.classList.contains('active')) {
+            answer.style.maxHeight = answer.scrollHeight + "px";
+        } else {
+            answer.style.maxHeight = null;
+        }
     });
-</script>
-</script>
-<script>
-  // 1. Configurações do Supabase
-  const SUPABASE_URL = 'https://cmkeabkmaivfrgyfisex.supabase.co';
-  const SUPABASE_ANON_KEY = 'sb_publishable_fk41n_QrtzHJ_RoJss_Dww_N6IU-0LP'; // <--- Cole sua chave pública (sb_publishable_...) aqui
-
-  // 2. Inicializa o cliente Supabase
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  // 3. Função para buscar os serviços e renderizar no grid
-  async function loadServices() {
-    const grid = document.getElementById('productGrid');
-
-    try {
-      // Busca todas as colunas da tabela 'Services'
-      const { data: services, error } = await supabaseClient
-        .from('services')
-        .select('*');
-const { data: products, errorproducterror } = await supabaseClient
-        .from('products')
-        .select('*');
-  
-      if (error) throw error;
-
-      // Se não encontrar nenhum serviço
-      if (!services || services.length === 0) {
-        grid.innerHTML = '<p class="state-msg">Nenhum serviço encontrado.</p>';
-        return;
-      }
-
-      // Limpa a mensagem de carregamento
-      grid.innerHTML = '';
-
-      // Gera o HTML para cada serviço encontrado
-      services.forEach(service => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-          <h3>${service.name || 'Serviço sem nome'}</h3>
-          <p>${service.description || 'Sem descrição disponível.'}</p>
-          <span class="price">R$ ${service.price ? service.price.toFixed(2) : '0,00'}</span>
-        `;
-        grid.appendChild(card);
-     // Gera o HTML para cada serviço encontrado
-      products.forEach(product => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-          <h3>${product.name || 'produto sem nome'}</h3>
-          <p>${product.description || 'Sem descrição disponível.'}</p>
-          <span class="price">R$ ${product.price ? product.price.toFixed(2) : '0,00'}</span>
-        `;
-        grid.appendChild(card); });
-
-    } catch (err) {
-      console.error('Erro ao carregar serviços:', err);
-      grid.innerHTML = '<p class="state-msg">Erro ao carregar os serviços. Tente novamente mais tarde.</p>';
-    }
-  }
-
-  // Executa a função assim que o DOM estiver carregado
-  document.addEventListener('DOMContentLoaded', loadServices);
+});
 </script>
 </body>
   </html>
