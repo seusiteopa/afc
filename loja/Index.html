@@ -626,7 +626,7 @@ function priceLabel(c){ return 'R$ '+(c/100).toFixed(2).replace('.',','); }
 function renderCard(p){
   const media=p.image_url?`<img src="${p.image_url}" alt="${p.name}" loading="lazy">`:
     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="18" height="13" rx="1"/><path d="M8 7V5a4 4 0 0 1 8 0v2"/></svg>`;
-  return `<a class="card" href="${p.slug}.html">
+  return `<a class="card" href="/loja/${p.slug}.html">
     <div class="card__media"><span class="card__tag">${p.type==='digital'?'DIGITAL':'FÍSICO'}</span>${media}</div>
     <div class="card__body">
       <div class="card__name">${p.name}</div>
